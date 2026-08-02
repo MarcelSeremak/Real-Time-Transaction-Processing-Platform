@@ -11,7 +11,8 @@ dependencies = [
     "alembic (>=1.18.5,<2.0.0)",
     "psycopg2-binary (>=2.9.12,<3.0.0)",
     "python-dotenv (>=1.2.2,<2.0.0)",
-    "faker (>=40.36.0,<41.0.0)"
+    "faker (>=40.36.0,<41.0.0)",
+    "redis (>=8.1.0,<9.0.0)"
 ]
 
 
@@ -23,5 +24,7 @@ build-backend = "poetry.core.masonry.api"
 packages = [
     { include = "db", from = "src" },
     { include = "generator", from = "src" },
-    { include = "utils", from = "src" }
+    { include = "utils", from = "src" },
+    { include = "kafka_producer", from = "src" },
+    { include = "cache", from = "src" }
 ]

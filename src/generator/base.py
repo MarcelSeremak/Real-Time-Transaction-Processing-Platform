@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 import time
 import uuid
 from datetime import datetime, timezone
+from cache import RedisClient
 from kafka_producer import KafkaGenerator
 from utils.logger import get_logger
 
@@ -15,6 +16,8 @@ class BaseGenerator(ABC):
             bootstrap_server,
             topic
         )
+        self.cache = RedisClient()
+        self.counter = 0
 
     @abstractmethod
     def generate(self):
@@ -42,6 +45,9 @@ class BaseGenerator(ABC):
             )
 
             self.send(event)
+            self.counter += 1
+            if self.counter % 100 == 0:
+                self.logger.info(f"{self.__class__.__name__} generated {self.counter} events")
             time.sleep(delay)
 
     def send(self, event):

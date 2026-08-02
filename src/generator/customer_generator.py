@@ -1,14 +1,22 @@
 from faker import Faker
 from generator.base import BaseGenerator
-
+from uuid import uuid4
 class CustomerGenerator(BaseGenerator):
 
-    def __init__(self, rate_per_second: int, bootstrap_server: str, topic: str):
+    def __init__(self, rate_per_second: int,
+                bootstrap_server: str,
+                topic: str
+            ):
         super().__init__(rate_per_second, bootstrap_server, topic)
         self.fake = Faker()
 
     def generate(self):
-        return {
+
+
+        customer_id = str(uuid4())
+
+        customer = {
+            "customer_id": customer_id,
             "first_name": self.fake.first_name(),
             "last_name": self.fake.last_name(),
             "country": self.fake.country(),
@@ -18,3 +26,10 @@ class CustomerGenerator(BaseGenerator):
             ),
             "status": "ACTIVE"
         }
+ 
+        self.cache.set(
+            f"customer:{customer_id}",
+            customer
+        )
+
+        return customer

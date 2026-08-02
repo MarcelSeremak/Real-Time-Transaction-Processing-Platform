@@ -1,5 +1,6 @@
 from faker import Faker
 from generator.base import BaseGenerator
+from uuid import uuid4
 
 class MerchantGenerator(BaseGenerator):
 
@@ -17,7 +18,11 @@ class MerchantGenerator(BaseGenerator):
         self.fake = Faker()
 
     def generate(self):
-        return {
+
+        merchant_id = str(uuid4())
+
+        merchant =  {
+            "merchant_id": merchant_id,
             "merchant_name": self.fake.company(),
             "category": self.fake.random_element(
                 [
@@ -32,3 +37,10 @@ class MerchantGenerator(BaseGenerator):
             "city": self.fake.city(),
             "status": "ACTIVE"
         }
+
+        self.cache.set(
+            f"merchant:{merchant_id}",
+            merchant
+        )
+
+        return merchant
