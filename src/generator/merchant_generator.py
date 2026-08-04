@@ -44,3 +44,7 @@ class MerchantGenerator(BaseGenerator):
         )
 
         return merchant
+    
+    def send(self, event):
+        self.producer.send(event,
+                        key=event["data"]["merchant_id"])

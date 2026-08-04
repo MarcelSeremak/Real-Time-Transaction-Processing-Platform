@@ -25,9 +25,7 @@ class TransactionGenerator(BaseGenerator):
             "merchant:*"
         )
         if not accounts or not merchants:
-            return {
-                "error": "Missing account or merchant"
-            }
+            return None
 
         account = self.cache.get(
             self.fake.random_element(accounts)
@@ -36,6 +34,8 @@ class TransactionGenerator(BaseGenerator):
         merchant = self.cache.get(
             self.fake.random_element(merchants)
         )
+        if account is None or merchant is None:
+            return None
 
         transaction_id = str(uuid4())
         return {
@@ -59,3 +59,7 @@ class TransactionGenerator(BaseGenerator):
             ),
             "status": "COMPLETED"
         }
+
+    def send(self, event):
+        self.producer.send(event,
+                        key=event["data"]["transaction_id"])

@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
-import time
 import uuid
 from datetime import datetime, timezone
+from threading import Event
 from cache import RedisClient
 from kafka_producer import KafkaGenerator
 from utils.logger import get_logger
@@ -18,9 +18,14 @@ class BaseGenerator(ABC):
         )
         self.cache = RedisClient()
         self.counter = 0
+        self.stop_event = Event()
 
     @abstractmethod
     def generate(self):
+        pass
+
+    @abstractmethod
+    def send(self, event):
         pass
 
     def create_event(self, data: dict):
@@ -30,6 +35,9 @@ class BaseGenerator(ABC):
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "data": data
         }
+    def stop(self):
+        self.stop_event.set()
+        self.logger.info(f"Stopping generator {self.__class__.__name__}")
 
     def run(self):
         delay = 1 / self.rate_per_second
@@ -39,16 +47,20 @@ class BaseGenerator(ABC):
             f"with rate {self.rate_per_second}/s"
         )
 
-        while True:
-            event = self.create_event(
-                self.generate()
-            )
+        while not self.stop_event.is_set():
+            try:
+                data = self.generate()
+                if data is None:
+                    self.stop_event.wait(delay)
+                    continue
 
-            self.send(event)
-            self.counter += 1
-            if self.counter % 100 == 0:
-                self.logger.info(f"{self.__class__.__name__} generated {self.counter} events")
-            time.sleep(delay)
+                event = self.create_event(data)
+                self.send(event)
+                self.counter += 1
+                if self.counter % 100 == 0:
+                    self.logger.info(f"{self.__class__.__name__} generated {self.counter} events")
+            except Exception:
+                self.logger.exception(f"{self.__class__.__name__} failed")
+                raise
 
-    def send(self, event):
-        self.producer.send(event)
+            self.stop_event.wait(delay)

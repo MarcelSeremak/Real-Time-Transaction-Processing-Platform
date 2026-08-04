@@ -1,6 +1,7 @@
 import sys
 from pathlib import Path
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import FIRST_EXCEPTION, ThreadPoolExecutor, wait
+import signal
 
 sys.path.append(str(Path(__file__).parent.parent))
 
@@ -48,6 +49,28 @@ generators = [
     transaction_generator
 ]
 
-with ThreadPoolExecutor(max_workers=len(generators)) as executor:
+def shutdown(signal_number, frame):
+    print("Received shutdown signal. Stopping generators...")
     for generator in generators:
-        executor.submit(generator.run)
+        generator.stop()
+
+signal.signal(signal.SIGINT, shutdown)
+signal.signal(signal.SIGTERM, shutdown)
+
+executor = ThreadPoolExecutor(
+    max_workers=len(generators)
+)
+
+with executor as executor:
+    futures = {
+        executor.submit(generator.run): generator
+        for generator in generators
+    }
+    done, _ = wait(futures, return_when=FIRST_EXCEPTION)
+    for future in done:
+        exception = future.exception()
+        if exception:
+            generator = futures[future]
+            print(f"{generator.__class__.__name__} encountered an error: {exception}")
+            shutdown(None, None)
+            raise exception

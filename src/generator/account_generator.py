@@ -22,9 +22,7 @@ class AccountGenerator(BaseGenerator):
             "customer:*"
         )
         if not customers:
-            return {
-                "error": "No customers available"
-            }
+            return None
         customer_key = self.fake.random_element(customers)
         customer = self.cache.get(customer_key)
         account_id = str(uuid4())
@@ -55,3 +53,7 @@ class AccountGenerator(BaseGenerator):
         )
 
         return account
+    
+    def send(self, event):
+        self.producer.send(event,
+                        key=event["data"]["account_id"])

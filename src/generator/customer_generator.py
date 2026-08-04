@@ -33,3 +33,7 @@ class CustomerGenerator(BaseGenerator):
         )
 
         return customer
+
+    def send(self, event):
+        self.producer.send(event,
+                        key=event["data"]["customer_id"])
