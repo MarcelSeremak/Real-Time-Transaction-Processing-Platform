@@ -16,7 +16,7 @@ jobs:
           python-version: '3.12'
 
       - name: Create test environment
-        run: cp .env.example .env
+        run: cp config/.env.example config/.env
 
       - name: Install dependencies
         run: |
