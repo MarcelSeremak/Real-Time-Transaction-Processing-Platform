@@ -1,6 +1,10 @@
-from faker import Faker
-from generator.base import BaseGenerator
 from uuid import uuid4
+
+from faker import Faker
+
+from generator.base import BaseGenerator
+
+
 class CustomerGenerator(BaseGenerator):
 
     def __init__(self, rate_per_second: int,

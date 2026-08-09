@@ -1,22 +1,21 @@
-import sys
-from pathlib import Path
-from concurrent.futures import FIRST_EXCEPTION, ThreadPoolExecutor, wait
 import signal
+import sys
+from concurrent.futures import FIRST_EXCEPTION, ThreadPoolExecutor, wait
+from pathlib import Path
 
 sys.path.append(str(Path(__file__).parent.parent))
 
+from config.settings import (
+    ACCOUNT_RATE,
+    CUSTOMER_RATE,
+    KAFKA_BOOTSTRAP_SERVER,
+    MERCHANT_RATE,
+    TRANSACTION_RATE,
+)
+from generator.account_generator import AccountGenerator
 from generator.customer_generator import CustomerGenerator
 from generator.merchant_generator import MerchantGenerator
-from generator.account_generator import AccountGenerator
 from generator.transaction_generator import TransactionGenerator
-from config.settings import (
-    CUSTOMER_RATE,
-    MERCHANT_RATE,
-    ACCOUNT_RATE,
-    TRANSACTION_RATE,
-    KAFKA_BOOTSTRAP_SERVER
-)
-
 
 customer_generator = CustomerGenerator(
     rate_per_second=CUSTOMER_RATE,

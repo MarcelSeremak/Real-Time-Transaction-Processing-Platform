@@ -1,4 +1,5 @@
 import json
+
 from kafka import KafkaProducer
 
 
@@ -22,7 +23,7 @@ class KafkaGenerator:
             compression_type="lz4",
         )
 
-    def send(self, message: dict, key: str = None):
+    def send(self, message: dict, key: str | None = None):
         self.producer.send(self.topic,
                             key=key.encode("utf-8") if key else None,
                             value=message)

@@ -1,8 +1,10 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
+
 from sqlalchemy import DateTime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+
 from db.database import Base
 
 if TYPE_CHECKING:
@@ -23,7 +25,7 @@ class Customer(Base):
     risk_level: Mapped[str] = mapped_column(nullable=False)
     registration_date: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        default=lambda: datetime.now(timezone.utc),
+        default=lambda: datetime.now(UTC),
         nullable=False
     )
     status: Mapped[str] = mapped_column(nullable=False)

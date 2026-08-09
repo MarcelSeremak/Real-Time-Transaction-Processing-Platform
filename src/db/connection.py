@@ -1,8 +1,11 @@
+import os
+import pathlib
+
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
+from sqlalchemy.exc import SQLAlchemyError
+
 from utils.logger import get_logger
-import pathlib
-import os
 
 logger = get_logger("DB_CONNECTION")
 
@@ -25,6 +28,6 @@ def get_engine():
         connection = engine.connect()
         logger.info("Connection to the database was successful.")
         connection.close()
-    except Exception as e:
+    except SQLAlchemyError as e:
         logger.error(f"An error occurred while connecting to the database: {e}")
     return engine

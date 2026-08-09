@@ -1,7 +1,8 @@
-from abc import ABC, abstractmethod
 import uuid
-from datetime import datetime, timezone
+from abc import ABC, abstractmethod
+from datetime import UTC, datetime
 from threading import Event
+
 from cache import RedisClient
 from kafka_producer import KafkaGenerator
 from utils.logger import get_logger
@@ -32,7 +33,7 @@ class BaseGenerator(ABC):
         return {
             "event_id": str(uuid.uuid4()),
             "event_type": self.__class__.__name__,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "data": data
         }
     def stop(self):
