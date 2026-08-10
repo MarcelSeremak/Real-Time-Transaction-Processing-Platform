@@ -28,3 +28,5 @@ TRANSACTION_TOPIC = "transactions"
 
 REDIS_HOST = os.getenv("REDIS_HOST")
 REDIS_PORT = int(os.getenv("REDIS_PORT"))
+
+SPARK_BATCH_SIZE = int(os.getenv("SPARK_BATCH_SIZE"))
