@@ -1,8 +1,7 @@
-from pyspark.sql import SparkSession, DataFrame
-from config.settings import (
-    KAFKA_BOOTSTRAP_SERVER,
-    SPARK_BATCH_SIZE
-)
+from pyspark.sql import DataFrame, SparkSession
+
+from config.settings import KAFKA_BOOTSTRAP_SERVER, SPARK_BATCH_SIZE
+
 
 def read_events(spark: SparkSession, topic: str) -> DataFrame:
 

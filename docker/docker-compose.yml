@@ -10,7 +10,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
     ports:
-      - "${POSTGRES_PORT}:5432"
+      - "${POSTGRES_PORT_EXTERNAL}:${POSTGRES_PORT_INTERNAL}"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -32,7 +32,7 @@ services:
     container_name: transaction-alembic
     environment:
       POSTGRES_HOST: ${POSTGRES_HOST}
-      POSTGRES_PORT: ${POSTGRES_PORT}
+      POSTGRES_PORT: ${POSTGRES_PORT_INTERNAL}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
@@ -46,7 +46,7 @@ services:
     image: redis:7-alpine
     container_name: transaction-redis
     ports:
-      - "${REDIS_PORT:-6379}:6379"
+      - "${REDIS_PORT}:6379"
     restart: unless-stopped
     networks:
       - transaction-network
@@ -234,12 +234,10 @@ services:
       context: ..
       dockerfile: docker/Dockerfile.generator
     container_name: transaction-generator
-    env_file:
-      - ../config/.env
     environment:
-      REDIS_HOST: redis
-      REDIS_PORT: ${REDIS_PORT:-6379}
-      KAFKA_BOOTSTRAP_SERVER: ${KAFKA_BOOTSTRAP_SERVER:-kafka_broker_1:19092,kafka_broker_2:19092,kafka_broker_3:19092}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      KAFKA_BOOTSTRAP_SERVER: ${KAFKA_BOOTSTRAP_SERVER}
     depends_on:
       redis:
         condition: service_started
@@ -248,7 +246,23 @@ services:
     networks:
       - transaction-network
 
-
+  spark:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.spark
+    env_file:
+      - ../config/.env
+    depends_on:
+      kafka-init:
+        condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
+      alembic:
+        condition: service_completed_successfully
+    volumes:
+      - spark_checkpoints:/app/checkpoints
+    networks:
+      - transaction-network
 
 volumes:
 
@@ -261,6 +275,8 @@ volumes:
   kafka_broker_1_data:
   kafka_broker_2_data:
   kafka_broker_3_data:
+
+  spark_checkpoints:
 
 
 

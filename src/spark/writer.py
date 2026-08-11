@@ -1,10 +1,11 @@
 from pyspark.sql import DataFrame
+
 from config.settings import (
-    POSTGRES_HOST,
-    POSTGRES_PORT,
     POSTGRES_DB,
-    POSTGRES_USER,
+    POSTGRES_HOST,
     POSTGRES_PASSWORD,
+    POSTGRES_PORT,
+    POSTGRES_USER,
 )
 
 

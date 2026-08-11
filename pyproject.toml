@@ -16,8 +16,7 @@ dependencies = [
     "kafka-python (>=3.0.9,<4.0.0)",
     "lz4 (>=4.4.5,<5.0.0)",
     "ruff (>=0.16.2,<0.17.0)",
-    "pytest (>=9.1.1,<10.0.0)",
-    "pyspark (==4.1.2)"
+    "pytest (>=9.1.1,<10.0.0)"
 ]
 
 
@@ -31,8 +30,7 @@ packages = [
     { include = "generator", from = "src" },
     { include = "utils", from = "src" },
     { include = "kafka_producer", from = "src" },
-    { include = "cache", from = "src" },
-    { include = "spark", from = "src" }
+    { include = "cache", from = "src" }
 ]
 
 [tool.pytest.ini_options]

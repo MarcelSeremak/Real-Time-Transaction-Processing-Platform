@@ -1,0 +1,15 @@
+FROM apache/spark:4.1.2-python3
+
+USER root
+WORKDIR /app
+
+COPY src ./src
+COPY config/settings.py ./config/settings.py
+
+ENV PYSPARK_PYTHON=python3
+ENV PYSPARK_DRIVER_PYTHON=python3
+ENV PYTHONPATH=/app/src:/app:/opt/spark/python/lib/pyspark.zip:/opt/spark/python/lib/py4j-0.10.9.9-src.zip
+
+RUN mkdir -p /app/checkpoints
+
+CMD ["/opt/spark/bin/spark-submit", "--packages", "org.apache.spark:spark-sql-kafka-0-10_2.13:4.1.2,org.postgresql:postgresql:42.7.7", "/app/src/spark/job.py"]

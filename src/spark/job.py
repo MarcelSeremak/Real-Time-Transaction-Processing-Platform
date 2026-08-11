@@ -14,7 +14,6 @@ from spark.transformer import (
 )
 from spark.writer import write_to_postgres
 
-
 EVENT_CONFIG = {
     "accounts": {
         "event_type": "AccountGenerator",
@@ -79,7 +78,7 @@ def process_event(
         )
         .option(
             "checkpointLocation",
-            f"/tmp/checkpoints/{topic}"
+            f"checkpoints/{topic}"
         )
         .start()
     )

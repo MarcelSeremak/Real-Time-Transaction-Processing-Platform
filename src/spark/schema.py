@@ -1,9 +1,4 @@
-from pyspark.sql.types import (
-    StructType,
-    StructField,
-    StringType,
-    DoubleType
-)
+from pyspark.sql.types import DoubleType, StringType, StructField, StructType
 
 transaction_schema = StructType([
     StructField("event_id", StringType(), False),
