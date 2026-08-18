@@ -3,7 +3,7 @@ from decimal import Decimal
 from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
-from sqlalchemy import DateTime, ForeignKey, Numeric
+from sqlalchemy import DateTime, ForeignKey, Numeric, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from db.database import Base
@@ -17,7 +17,8 @@ class Account(Base):
 
     account_id: Mapped[UUID] = mapped_column(
         primary_key=True,
-        default=uuid4
+        default=uuid4,
+        server_default=text("gen_random_uuid()")
     )
     customer_id: Mapped[UUID] = mapped_column(ForeignKey("customers.customer_id"))
     iban: Mapped[str] = mapped_column(nullable=False)
@@ -26,6 +27,7 @@ class Account(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         default=lambda: datetime.now(UTC),
+        server_default=text("now()"),
         nullable=False
     )
     status: Mapped[str] = mapped_column(

@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
+from sqlalchemy import text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from db.database import Base
@@ -14,7 +15,8 @@ class Merchant(Base):
 
     merchant_id: Mapped[UUID] = mapped_column(
         primary_key=True,
-        default=uuid4
+        default=uuid4,
+        server_default=text("gen_random_uuid()")
     )
     name: Mapped[str] = mapped_column(nullable=False)
     category: Mapped[str] = mapped_column(nullable=False)
