@@ -40,10 +40,6 @@ class Transaction(Base):
         nullable=False
     )
     status: Mapped[str] = mapped_column(nullable=False)
-    fraud_score: Mapped[Decimal] = mapped_column(
-        Numeric(5, 2),
-        nullable=False
-    )
     account: Mapped["Account"] = relationship(
         "Account",
         back_populates="transactions"

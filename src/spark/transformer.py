@@ -6,6 +6,38 @@ from pyspark.sql.functions import (
 )
 from pyspark.sql.types import StructType
 
+TABLE_COLUMNS = {
+    "customers": {
+        "date_column": "registration_date",
+        "columns": [
+            "customer_id", "first_name", "last_name",
+            "country", "city", "risk_level", "status",
+        ],
+        "renames": {},
+    },
+    "accounts": {
+        "date_column": "created_at",
+        "columns": [
+            "account_id", "customer_id", "iban",
+            "currency", "balance", "status",
+        ],
+        "renames": {},
+    },
+    "merchants": {
+        "date_column": None,
+        "columns": ["merchant_id", "name", "category", "country", "risk_level"],
+        "renames": {"merchant_name": "name"},
+    },
+    "transactions": {
+        "date_column": "transaction_date",
+        "columns": [
+            "transaction_id", "account_id", "merchant_id",
+            "amount", "currency", "status",
+        ],
+        "renames": {},
+    },
+}
+
 
 def transform_events(
     df: DataFrame,
@@ -98,3 +130,21 @@ def clean_events(
         )
 
     return df
+
+
+def project_for_table(
+    df: DataFrame,
+    table_name: str
+) -> DataFrame:
+
+    config = TABLE_COLUMNS[table_name]
+
+    for old_name, new_name in config["renames"].items():
+        df = df.withColumnRenamed(old_name, new_name)
+
+    columns = config["columns"]
+    if config["date_column"]:
+        df = df.withColumnRenamed("timestamp", config["date_column"])
+        columns = [*columns, config["date_column"]]
+
+    return df.select(*columns)

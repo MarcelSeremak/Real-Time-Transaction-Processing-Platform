@@ -1,13 +1,13 @@
 import logging
 import pathlib
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 
 
 def get_logger(name):
     log_dir = pathlib.Path(__file__).parent.parent.parent / "logs"
     log_dir.mkdir(exist_ok=True)
 
-    log_filename = log_dir / f"{datetime.now(UTC).date()}.log"
+    log_filename = log_dir / f"{datetime.now(timezone.utc).date()}.log"
     logger = logging.getLogger(name)
     logger.setLevel(logging.INFO)
 

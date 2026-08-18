@@ -38,6 +38,9 @@ class MerchantGenerator(BaseGenerator):
             ),
             "country": self.fake.country(),
             "city": self.fake.city(),
+            "risk_level": self.fake.random_element(
+                ["LOW", "MEDIUM", "HIGH"]
+            ),
             "status": "ACTIVE"
         }
 

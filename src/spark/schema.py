@@ -43,6 +43,7 @@ merchant_schema = StructType([
         StructField("category", StringType(), False),
         StructField("country", StringType(), False),
         StructField("city", StringType(), False),
+        StructField("risk_level", StringType(), False),
         StructField("status", StringType(), False),
     ]), False),
 ])

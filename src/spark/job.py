@@ -10,9 +10,13 @@ from spark.schema import (
 )
 from spark.transformer import (
     clean_events,
+    project_for_table,
     transform_events,
 )
 from spark.writer import write_to_postgres
+from utils.logger import get_logger
+
+logger = get_logger("SPARK_JOB")
 
 EVENT_CONFIG = {
     "accounts": {
@@ -67,15 +71,23 @@ def process_event(
         config["event_type"]
     )
 
+    df = project_for_table(
+        df,
+        config["table"]
+    )
+
+    def write_batch(batch_df, batch_id):
+        try:
+            write_to_postgres(batch_df, config["table"])
+        except Exception:
+            logger.exception(
+                f"Failed writing batch {batch_id} for {config['table']}, "
+                "batch dropped, streaming continues"
+            )
+
     query = (
         df.writeStream
-        .foreachBatch(
-            lambda batch_df, batch_id:
-                write_to_postgres(
-                    batch_df,
-                    config["table"]
-                )
-        )
+        .foreachBatch(write_batch)
         .option(
             "checkpointLocation",
             f"checkpoints/{topic}"
