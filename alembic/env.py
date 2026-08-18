@@ -4,6 +4,8 @@ from alembic import context
 from db.connection import get_engine
 from db.database import Base
 
+import db.models  # noqa: F401  ensures all tables are registered on Base.metadata
+
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
